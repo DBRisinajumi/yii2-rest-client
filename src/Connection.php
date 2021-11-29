@@ -63,6 +63,11 @@ class Connection extends Component
     public $responseConfig = [];
 
     /**
+     * @var array client config configuration.
+     */
+    public $clientConfig = [];
+
+    /**
      * @var boolean Whether to use pluralisation or not
      */
     public $usePluralisation = true;
@@ -426,14 +431,18 @@ class Connection extends Component
         if (static::$_handler === null) {
             $requestConfig = $this->requestConfig;
             $responseConfig = array_merge([
-                'class' => 'yii\httpclient\Response',
+                'class' => Response::class,
                 'format' => Client::FORMAT_JSON
             ], $this->responseConfig);
-            static::$_handler = new Client([
-                'baseUrl' => $this->baseUrl,
-                'requestConfig' => $requestConfig,
-                'responseConfig' => $responseConfig
-            ]);
+            $clientConfig = array_merge(
+                $this->clientConfig,
+                [
+                    'baseUrl' => $this->baseUrl,
+                    'requestConfig' => $requestConfig,
+                    'responseConfig' => $responseConfig
+                ]
+            );
+            static::$_handler = new Client($clientConfig);
         }
 
         return static::$_handler;
